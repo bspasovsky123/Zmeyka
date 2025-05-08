@@ -1,123 +1,106 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Настройки игры
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-  
-    const gridSize = 20; // размер клетки
-    const canvasSize = 400; // размер игрового поля
-    let score = 0;
-    let snake = [{x: 160, y: 160}];
-    let direction = 'RIGHT';
-    let food = generateFood();
-  
-    // Элементы для модального окна
-    const gameOverModal = document.getElementById("gameOverModal");
-    const gameOverText = document.getElementById("gameOverText");
-    const restartButton = document.getElementById("restartButton");
-  
-    // Основной игровой цикл
-    function gameLoop() {
-      moveSnake();
-      if (checkCollision()) {
-        return gameOver();
-      }
-      if (eatFood()) {
-        score++;
-        document.getElementById("score").textContent = score;
-        food = generateFood();
-      }
-      draw();
-      setTimeout(gameLoop, 100); // Таймаут для обновления
+let canvas = document.getElementById('gameCanvas');
+let ctx = canvas.getContext('2d');
+
+// Начальная позиция змейки
+let snake = [{ x: 9, y: 9 }];
+let direction = 'right';
+let food = { x: 5, y: 5 };  // Позиция еды
+let score = 0;  // Счет игры
+
+// Функция рисования змейки
+function drawSnake() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
+
+  ctx.fillStyle = 'green';
+  for (let i = 0; i < snake.length; i++) {
+    ctx.fillRect(snake[i].x * 20, snake[i].y * 20, 20, 20);
+  }
+
+  // Рисуем еду
+  ctx.fillStyle = 'red';
+  ctx.fillRect(food.x * 20, food.y * 20, 20, 20);
+}
+
+// Функция движения змейки
+function moveSnake() {
+  let head = { ...snake[0] };
+
+  if (direction === 'right') head.x++;
+  if (direction === 'left') head.x--;
+  if (direction === 'up') head.y--;
+  if (direction === 'down') head.y++;
+
+  snake.unshift(head); // Добавляем новый элемент в начало змейки
+
+  // Проверка на столкновение с едой
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    food = randomFoodPosition();  // Генерируем новую еду
+  } else {
+    snake.pop();  // Убираем последний элемент змейки
+  }
+
+  // Проверка на столкновение с границами или самим собой
+  if (head.x < 0 || head.x >= canvas.width / 20 || head.y < 0 || head.y >= canvas.height / 20 || checkCollision(head)) {
+    alert('Игра окончена! Ваш счёт: ' + score);
+    resetGame();
+  }
+}
+
+// Функция для генерации случайной позиции еды
+function randomFoodPosition() {
+  let x = Math.floor(Math.random() * (canvas.width / 20));
+  let y = Math.floor(Math.random() * (canvas.height / 20));
+  return { x, y };
+}
+
+// Функция для проверки столкновений змейки с самой собой
+function checkCollision(head) {
+  for (let i = 1; i < snake.length; i++) {
+    if (snake[i].x === head.x && snake[i].y === head.y) {
+      return true;
     }
+  }
+  return false;
+}
+
+// Обработчик нажатий клавиш
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'ArrowUp' && direction !== 'down') direction = 'up';
+  if (event.key === 'ArrowDown' && direction !== 'up') direction = 'down';
+  if (event.key === 'ArrowLeft' && direction !== 'right') direction = 'left';
+  if (event.key === 'ArrowRight' && direction !== 'left') direction = 'right';
+});
+
+// Функция обновления игры
+function update() {
+  moveSnake();
+  drawSnake();
+}
+
+// Функция для сброса игры
+function resetGame() {
+  snake = [{ x: 9, y: 9 }];
+  direction = 'right';
+  score = 0;
+  food = randomFoodPosition();
+}
+
+// Переключение между светлым и темным режимами
+function toggleMode() {
+  let body = document.body;
+  let modeButton = document.querySelector('.mode-switch');
   
-    // Отрисовка игры
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // очищаем экран
-      ctx.fillStyle = "green";
-      snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize)); // рисуем змейку
-      ctx.fillStyle = "red";
-      ctx.fillRect(food.x, food.y, gridSize, gridSize); // рисуем еду
-    }
-  
-    // Движение змейки
-    function moveSnake() {
-      let head = {x: snake[0].x, y: snake[0].y};
-  
-      switch (direction) {
-        case 'UP': head.y -= gridSize; break;
-        case 'DOWN': head.y += gridSize; break;
-        case 'LEFT': head.x -= gridSize; break;
-        case 'RIGHT': head.x += gridSize; break;
-      }
-  
-      snake.unshift(head); // добавляем новую голову
-      snake.pop(); // убираем хвост
-    }
-  
-    // Проверка на столкновение с границами или с самой собой
-    function checkCollision() {
-      let head = snake[0];
-  
-      if (head.x < 0 || head.x >= canvasSize || head.y < 0 || head.y >= canvasSize) {
-        return true;
-      }
-  
-      for (let i = 1; i < snake.length; i++) {
-        if (snake[i].x === head.x && snake[i].y === head.y) {
-          return true;
-        }
-      }
-  
-      return false;
-    }
-  
-    // Проверка на съедание еды
-    function eatFood() {
-      let head = snake[0];
-      return head.x === food.x && head.y === food.y;
-    }
-  
-    // Генерация еды в случайной клетке
-    function generateFood() {
-      let x = Math.floor(Math.random() * (canvasSize / gridSize)) * gridSize;
-      let y = Math.floor(Math.random() * (canvasSize / gridSize)) * gridSize;
-      return {x, y};
-    }
-  
-    // Обработка ввода с клавиатуры
-    document.addEventListener("keydown", function(event) {
-      if (event.code === "ArrowUp" && direction !== 'DOWN') {
-        direction = 'UP';
-      } else if (event.code === "ArrowDown" && direction !== 'UP') {
-        direction = 'DOWN';
-      } else if (event.code === "ArrowLeft" && direction !== 'RIGHT') {
-        direction = 'LEFT';
-      } else if (event.code === "ArrowRight" && direction !== 'LEFT') {
-        direction = 'RIGHT';
-      }
-    });
-  
-    // Конец игры
-    function gameOver() {
-      gameOverText.textContent = `Игра окончена! Ваш счёт: ${score}`;
-      gameOverModal.style.display = 'flex'; // Показываем модальное окно
-    }
-  
-    // Сброс игры
-    function resetGame() {
-      snake = [{x: 160, y: 160}];
-      direction = 'RIGHT';
-      score = 0;
-      document.getElementById("score").textContent = score;
-      food = generateFood();
-      gameLoop();
-      gameOverModal.style.display = 'none'; // Скрываем модальное окно
-    }
-  
-    // Обработчик кнопки "Начать заново"
-    restartButton.addEventListener("click", resetGame);
-  
-    // Запуск игры
-    gameLoop();
-  });
-    
+  if (body.classList.contains('light-mode')) {
+    body.classList.remove('light-mode');
+    body.classList.add('dark-mode');
+    modeButton.textContent = 'Светлый режим';
+  } else {
+    body.classList.remove('dark-mode');
+    body.classList.add('light-mode');
+    modeButton.textContent = 'Темный режим';
+  }
+}
+
+// Обновление игры каждые 100 миллисекунд
+setInterval(update, 100);
