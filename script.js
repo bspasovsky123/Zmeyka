@@ -86,21 +86,5 @@ function resetGame() {
   food = randomFoodPosition();
 }
 
-// Переключение между светлым и темным режимами
-function toggleMode() {
-  let body = document.body;
-  let modeButton = document.querySelector('.mode-switch');
-  
-  if (body.classList.contains('light-mode')) {
-    body.classList.remove('light-mode');
-    body.classList.add('dark-mode');
-    modeButton.textContent = 'Светлый режим';
-  } else {
-    body.classList.remove('dark-mode');
-    body.classList.add('light-mode');
-    modeButton.textContent = 'Темный режим';
-  }
-}
-
 // Обновление игры каждые 100 миллисекунд
 setInterval(update, 100);
