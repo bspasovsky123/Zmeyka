@@ -2,23 +2,53 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Змейка</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s; /* Плавные переходы для фона и текста */
+    }
+
+    /* Стили для светлого режима */
+    body.light-mode {
+      background-color: #fff;
+      color: #333;
+    }
+
+    /* Стили для темного режима */
+    body.dark-mode {
+      background-color: #333;
+      color: #fff;
+    }
+
+    #gameCanvas {
+      display: block;
+      margin: 50px auto;
+      background-color: #000;
+    }
+
+    .mode-switch {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #666;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .mode-switch:hover {
+      background-color: #555;
+    }
+
+  </style>
 </head>
-<body>
-  <h1>Змейка</h1>
+<body class="light-mode">
+  <button class="mode-switch" onclick="toggleMode()">Темный режим</button>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
-  <p>Счёт: <span id="score">0</span></p>
-
-  <!-- Окно для окончания игры -->
-  <div id="gameOverModal" class="modal">
-    <div class="modal-content">
-      <p id="gameOverText">Игра окончена! Ваш счёт: 0</p>
-      <button id="restartButton">Начать заново</button>
-    </div>
-  </div>
-
   <script src="script.js"></script>
 </body>
 </html>
