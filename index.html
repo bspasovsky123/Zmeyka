@@ -11,6 +11,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
       overflow: hidden;
       animation: backgroundColorChange 10s infinite alternate; /* Анимация для фона */
     }
@@ -33,6 +34,14 @@
       background-color: #000;
     }
 
+    /* Текст под квадратом */
+    .footer-text {
+      margin-top: 20px;
+      font-size: 18px;
+      color: white;
+      text-align: center;
+    }
+
     .mode-switch {
       position: absolute;
       top: 20px;
@@ -52,6 +61,9 @@
 </head>
 <body>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <div class="footer-text">
+    "Для производственной практики в колледже АНО ПО ТЭК"
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
