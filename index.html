@@ -7,24 +7,29 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      transition: background-color 0.3s, color 0.3s; /* Плавные переходы для фона и текста */
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      animation: backgroundColorChange 10s infinite alternate; /* Анимация для фона */
     }
 
-    /* Стили для светлого режима */
-    body.light-mode {
-      background-color: #fff;
-      color: #333;
-    }
-
-    /* Стили для темного режима */
-    body.dark-mode {
-      background-color: #333;
-      color: #fff;
+    /* Плавно меняющийся фон с синими оттенками */
+    @keyframes backgroundColorChange {
+      0% {
+        background-color: #00c6ff;
+      }
+      50% {
+        background-color: #0066ff;
+      }
+      100% {
+        background-color: #00c6ff;
+      }
     }
 
     #gameCanvas {
       display: block;
-      margin: 50px auto;
       background-color: #000;
     }
 
@@ -43,11 +48,9 @@
     .mode-switch:hover {
       background-color: #555;
     }
-
   </style>
 </head>
-<body class="light-mode">
-  <button class="mode-switch" onclick="toggleMode()">Темный режим</button>
+<body>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
   <script src="script.js"></script>
 </body>
